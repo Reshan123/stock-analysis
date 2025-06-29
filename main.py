@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Request
 import requests
 import os
+import httpx
+import re
 
 app = FastAPI()
 
-TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "7673922428:AAFtLsVlehCWCPVpkGCVXbXPQDW-N4EtJ9U")
-TELEGRAM_API_URL = f"https://api.telegram.org/bot7673922428:AAFtLsVlehCWCPVpkGCVXbXPQDW-N4EtJ9U"
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}"
 
 def send_telegram_message(chat_id: int, text: str):
     payload = {
@@ -14,6 +16,21 @@ def send_telegram_message(chat_id: int, text: str):
         "parse_mode": "HTML",
     }
     requests.post(f"{TELEGRAM_API_URL}/sendMessage", json=payload)
+
+def markdown_to_telegram_html(markdown_text: str) -> str:
+    # Remove <think> tags
+    markdown_text = re.sub(r"</?think>", "", markdown_text).strip()
+
+    # Add line breaks
+    markdown_text = markdown_text.replace("\n", "<br>")
+
+    return markdown_text
+
+def clean_telegram_html(text):
+    # Remove any invalid HTML tags
+    allowed_tags = ["b", "i", "u", "s", "code", "pre", "a"]
+    # Replace <think> or anything not allowed
+    return re.sub(r"</?(?!(" + "|".join(allowed_tags) + r"))[^>]+>", "", text)
 
 @app.post("/webhook")
 async def telegram_webhook(request: Request):
@@ -119,6 +136,66 @@ async def telegram_webhook(request: Request):
             else:
                 formatted_list = "\n".join([f"<code>{symbol}</code>" for symbol in company_list])
                 send_telegram_message(chat_id, f'''<b>Company List:</b>\n{formatted_list}''')
+    elif text.startswith("/recommend"):
+        parts = text.split(" ")
+        if len(parts) < 2 or not parts[1].strip():
+            send_telegram_message(chat_id, "<b>Error: Please provide a company symbol. Usage: /add SYMBOL</b>")
+        else:
+            symbol = text.split(" ")[1].strip().upper()
+            url = "https://www.cse.lk/api/companyInfoSummery"
+            
+            response = requests.post(url, data={"symbol": symbol})
+            if response.status_code != 200:
+                send_telegram_message(chat_id, f'''<b>Invalid stock symbol: {symbol}</b>''')
+                return {"error": "Failed to fetch company information"}
+
+            company_info = response.json()
+            if not company_info or "reqSymbolInfo" not in company_info:
+                send_telegram_message(chat_id, f'''<b>Invalid stock symbol: {symbol}</b>''')
+                return {"error": "Invalid company data"}
+
+            info = company_info["reqSymbolInfo"]
+            prompt = f"""
+        You are a stock market advisor AI. Analyze the following company information and give a short investment recommendation in bullet points.
+
+        Please return the output using proper HTML formatting with <b>, <i>, and bullet points using • (not raw Markdown).
+
+        Company: {info['name']} ({info['symbol']})
+        Current Price: {info['lastTradedPrice']} LKR
+        Day High: {info['hiTrade']} LKR
+        Day Low: {info['lowTrade']} LKR
+        Change Today: {info['change']} LKR
+        Previous Close: {info['closingPrice']} LKR
+
+        ### Recommendation:
+        """
+
+            together_payload = {
+                "model": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free",
+                "messages": [{"role": "user", "content": prompt}]
+            }
+
+            headers = {
+                "Authorization": f"Bearer {os.getenv('TOGETHER_AI_API_KEY', '')}",
+                "Content-Type": "application/json"
+            }
+
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                together_response = await client.post(
+                    "https://api.together.xyz/v1/chat/completions",
+                    headers=headers,
+                    json=together_payload
+                )
+
+            if together_response.status_code != 200:
+                return {"error": "AI generation failed", "details": together_response.text}
+
+            result = together_response.json()
+            reply = result.get("choices", [{}])[0].get("message", {}).get("content", "")
+
+            reply_cleaned = re.sub(r"<think>.*?</think>", "", reply, flags=re.DOTALL)
+            send_telegram_message(chat_id, reply_cleaned)
+
     else:
         send_telegram_message(chat_id, f'''<b>Send /recommend <SYMBOL> to get stock advice.</b>''')
 
