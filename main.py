@@ -98,6 +98,7 @@ async def telegram_webhook(request: Request):
             
             message = f'''<b>{name} ({symbol})</b>
 📉 Day Range: <b>Rs.{lowTrade} - Rs.{hiTrade}</b>
+💰 Previous Close Price: <b>Rs {closing}</b>
 💰 Current Price: <b>Rs {price}</b>
 📈 Change: <b>Rs {change}</b> (<i>{change_percent}%</i>)
 📦 Volume (Today): <b>{volume:,}</b>'''
