@@ -63,6 +63,14 @@ async def telegram_webhook(request: Request):
                 send_telegram_message(chat_id, f'''<b>Invalid stock symbol: {stock_symbol}</b>''')
                 return {"ok": True}
 
+            if not company_info or "reqSymbolInfo" not in company_info or not company_info["reqSymbolInfo"].get("lastTradedPrice"):
+                send_telegram_message(chat_id, (
+                    f"📡 <b>Market data for {stock_symbol} is currently unavailable.</b>\n"
+                    f"🕖 This typically occurs before the Colombo Stock Exchange opens.\n"
+                    f"⏰ Please try again after <b>9:30 AM</b>."
+                ))
+                return {"error": "Market data unavailable"}
+
             companyMainData = {
                 "currentPrice": company_info['reqSymbolInfo']['lastTradedPrice'],
                 "high": company_info['reqSymbolInfo']['allHiPrice'],
@@ -150,9 +158,13 @@ async def telegram_webhook(request: Request):
                 return {"error": "Failed to fetch company information"}
 
             company_info = response.json()
-            if not company_info or "reqSymbolInfo" not in company_info:
-                send_telegram_message(chat_id, f'''<b>Invalid stock symbol: {symbol}</b>''')
-                return {"error": "Invalid company data"}
+            if not company_info or "reqSymbolInfo" not in company_info or not company_info["reqSymbolInfo"].get("lastTradedPrice"):
+                send_telegram_message(chat_id, (
+                    f"📡 <b>Market data for {symbol} is currently unavailable.</b>\n"
+                    f"🕖 This typically occurs before the Colombo Stock Exchange opens.\n"
+                    f"⏰ Please try again after <b>9:30 AM</b>."
+                ))
+                return {"error": "Market data unavailable"}
 
             info = company_info["reqSymbolInfo"]
             prompt = f"""
