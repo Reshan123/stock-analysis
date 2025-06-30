@@ -156,18 +156,28 @@ async def telegram_webhook(request: Request):
 
             info = company_info["reqSymbolInfo"]
             prompt = f"""
-        You are a stock market advisor AI. Analyze the following company information and give a short investment recommendation by considering what you know about the company and the current news.
+        You are a professional stock market advisor AI with expertise in analyzing Sri Lankan equities. Analyze the following real-time stock data for <b>{info['name']} ({info['symbol']})</b> and provide a concise investment recommendation.
 
-        Please return the output using proper HTML formatting with <b>, <i> and bullet points using • (not raw Markdown).
+<b>Requirements:</b>
+- Use proper <b>HTML formatting</b> (no Markdown).
+- Use bullet points with • for readability.
+- Use <b>bold</b> tags to emphasize key terms or labels.
+- Use <i>italics</i> where appropriate (e.g., when noting uncertainty or caution).
+- Keep it short, factual, and actionable (max 7 bullet points).
+- If unusual volatility or market behavior is detected, include a note about it.
+- Do not invent news — rely only on visible data or widely known context about the company or sector.
 
-        Company: {info['name']} ({info['symbol']})
-        Current Price: {info['lastTradedPrice']} LKR
-        Day High: {info['hiTrade']} LKR
-        Day Low: {info['lowTrade']} LKR
-        Change Today: {info['change']} LKR
-        Previous Close: {info['closingPrice']} LKR
+<b>Stock Data:</b><br>
+• Company: <b>{info['name']} ({info['symbol']})</b><br>
+• Current Price: <b>{info['lastTradedPrice']} LKR</b><br>
+• Day High: <b>{info['hiTrade']} LKR</b><br>
+• Day Low: <b>{info['lowTrade']} LKR</b><br>
+• Change Today: <b>{info['change']} LKR</b><br>
+• Previous Close: <b>{info['closingPrice']} LKR</b><br>
 
-        ### Recommendation:
+<b>Output Format:</b><br>
+Begin with a heading like: <b>Investment Recommendation for {info['name']} ({info['symbol']})</b><br>
+Then provide 5 to 7 bullet points based on the analysis, followed by a brief summary sentence.
         """
 
             together_payload = {
