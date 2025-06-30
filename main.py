@@ -172,11 +172,7 @@ async def telegram_webhook(request: Request):
         You are a professional stock market advisor AI with expertise in analyzing Sri Lankan equities. Analyze the following real-time stock data for <b>{info['name']} ({info['symbol']})</b> and provide a concise investment recommendation.
 
 <b>Requirements:</b>
-- Use proper <b>HTML formatting</b> (no Markdown).
-- Use bullet points with • for readability.
-- Use <b>bold</b> tags to emphasize key terms or labels.
-- Use <i>italics</i> where appropriate (e.g., when noting uncertainty or caution).
-- Keep it short, factual, and actionable (max 7 bullet points).
+- roper HTML formatting with <b>, <i>, and bullet points using • (not raw Markdown).
 - If unusual volatility or market behavior is detected, include a note about it.
 - Do not invent news — rely only on visible data or widely known context about the company or sector.
 
@@ -190,7 +186,7 @@ async def telegram_webhook(request: Request):
 
 <b>Output Format:</b><br>
 Begin with a heading like: <b>Investment Recommendation for {info['name']} ({info['symbol']})</b><br>
-Then provide 5 to 7 bullet points based on the analysis, followed by a brief summary sentence.
+Then provide the analysis, followed by a brief summary sentence.
         """
 
             together_payload = {
