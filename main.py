@@ -156,9 +156,9 @@ async def telegram_webhook(request: Request):
 
             info = company_info["reqSymbolInfo"]
             prompt = f"""
-        You are a stock market advisor AI. Analyze the following company information and give a short investment recommendation in bullet points.
+        You are a stock market advisor AI. Analyze the following company information and give a short investment recommendation by considering what you know about the company and the current news.
 
-        Please return the output using proper HTML formatting with <b>, <i>, and bullet points using • (not raw Markdown).
+        Please return the output using proper HTML formatting with <b>, <i>, bullet points using • and with icons to make it nice (not raw Markdown).
 
         Company: {info['name']} ({info['symbol']})
         Current Price: {info['lastTradedPrice']} LKR
