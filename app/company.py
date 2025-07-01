@@ -29,11 +29,11 @@ async def get_company_info(chat_id: int):
         companyMainData = company_info['reqSymbolInfo']
         message = f'''
         <b>{companyMainData['name']} ({companyMainData['symbol']})</b>
-        📉 Day Range: <b>Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}</b>
-        💰 Previous Close Price: <b>Rs {companyMainData['closingPrice']}</b>
-        💰 Current Price: <b>Rs {companyMainData['lastTradedPrice']}</b>
-        📈 Change: <b>Rs {companyMainData['change']}</b>
-        📦 Volume (Today): <b>{companyMainData['tdyShareVolume']:,}</b>
+📉 Day Range: <b>Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}</b>
+💰 Previous Close Price: <b>Rs {companyMainData['closingPrice']}</b>
+💰 Current Price: <b>Rs {companyMainData['lastTradedPrice']}</b>
+📈 Change: <b>Rs {companyMainData['change']}</b>
+📦 Volume (Today): <b>{companyMainData['tdyShareVolume']:,}</b>
         '''
         send_telegram_message(chat_id, message)
 
