@@ -1,11 +1,13 @@
 import httpx
 from app.telegram import send_telegram_message
 import os
+from pathlib import Path
 
 async def get_company_info(chat_id: int):
     # Opening the file asynchronously might be a better choice for performance,
     # though it's not strictly necessary for small file sizes
-    with open("companyList.txt") as f:
+    file_path = Path(__file__).resolve().parent / "companyList.txt"
+    with open(file_path) as f:
         company_list = f.read().splitlines()
 
     for company in company_list:
