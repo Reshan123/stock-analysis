@@ -45,7 +45,7 @@ You are a professional stock market advisor AI with expertise in analyzing Sri L
 • Day High: <b>{info['hiTrade']} LKR</b><br>
 • Day Low: <b>{info['lowTrade']} LKR</b><br>
 • Change Today: <b>{info['change']} LKR</b><br>
-• Previous Close: <b>{info['closingPrice']} LKR</b><br>
+• Previous Close: <b>{info['previousClose']} LKR</b><br>
 
 <b>Output Format:</b><br>
 Begin with a heading like: <b>Investment Recommendation for {info['name']} ({info['symbol']})</b><br>
