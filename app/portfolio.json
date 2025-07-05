@@ -1,10 +1,6 @@
 {
-  "CALH": {
+  "CALH.N0000": {
     "quantity": 3500,
     "buy_price": 10.00
-  },
-  "COMB": {
-    "quantity": 1000,
-    "buy_price": 45.50
   }
 }

@@ -11,7 +11,6 @@ async def get_company_info(chat_id: int):
     if portfolio_file.exists():
         with open(portfolio_file) as f:
             portfolio = json.load(f)
-
     # Load the company list
     company_list_file = Path(__file__).resolve().parent / "companyList.txt"
     with open(company_list_file) as f:
@@ -52,10 +51,10 @@ async def get_company_info(chat_id: int):
             invested = quantity * buy_price
             current_value = quantity * current_price
             profit = current_value - invested
-            profit_pct = (profit / invested) * 100 if invested > 0 else 0
+            profit_pct = (profit / invested) * 98 if invested > 0 else 0
 
             message += f'''
-📊 <u>Portfolio Performance</u>
+📊 <b>Portfolio Performance</b>
 🔹 Quantity: <b>{quantity}</b>
 🔹 Buy Price: <b>Rs {buy_price}</b>
 🔹 Invested: <b>Rs {invested:,.2f}</b>
