@@ -2,42 +2,71 @@ import httpx
 from app.telegram import send_telegram_message
 import os
 from pathlib import Path
+import json
 
 async def get_company_info(chat_id: int):
-    # Opening the file asynchronously might be a better choice for performance,
-    # though it's not strictly necessary for small file sizes
-    file_path = Path(__file__).resolve().parent / "companyList.txt"
-    with open(file_path) as f:
+    # Load portfolio data if available
+    portfolio_file = Path(__file__).resolve().parent / "portfolio.json"
+    portfolio = {}
+    if portfolio_file.exists():
+        with open(portfolio_file) as f:
+            portfolio = json.load(f)
+
+    # Load the company list
+    company_list_file = Path(__file__).resolve().parent / "companyList.txt"
+    with open(company_list_file) as f:
         company_list = f.read().splitlines()
 
-    for company in company_list:
-        stock_symbol = company
+    for stock_symbol in company_list:
         url = "https://www.cse.lk/api/companyInfoSummery"
-
         async with httpx.AsyncClient() as client:
             response = await client.post(url, data={"symbol": stock_symbol})
 
         if response.status_code != 200:
             send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
-            return {"error": "Failed to fetch company information"}
+            continue
 
         company_info = response.json()
         if not company_info or "reqSymbolInfo" not in company_info:
             send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
-            return {"ok": True}
+            continue
 
-        companyMainData = company_info['reqSymbolInfo']
+        companyMainData = company_info["reqSymbolInfo"]
+
+        # Base message (always shown)
         message = f'''
-        <b>{companyMainData['name']} ({companyMainData['symbol']})</b>
+<b>{companyMainData['name']} ({stock_symbol})</b>
 📉 Day Range: <b>Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}</b>
-💰 Previous Close Price: <b>Rs {companyMainData['previousClose']}</b>
+💰 Previous Close: <b>Rs {companyMainData['previousClose']}</b>
 💰 Current Price: <b>Rs {companyMainData['lastTradedPrice']}</b>
 📈 Change: <b>Rs {companyMainData['change']}</b>
-📦 Volume (Today): <b>{companyMainData['tdyShareVolume']:,}</b>
+📦 Volume (Today): <b>{int(companyMainData['tdyShareVolume']):,}</b>
         '''
+
+        # If stock is in portfolio, add profit details
+        if stock_symbol in portfolio:
+            data = portfolio[stock_symbol]
+            current_price = float(companyMainData["lastTradedPrice"])
+            quantity = data["quantity"]
+            buy_price = data["buy_price"]
+            invested = quantity * buy_price
+            current_value = quantity * current_price
+            profit = current_value - invested
+            profit_pct = (profit / invested) * 100 if invested > 0 else 0
+
+            message += f'''
+📊 <u>Portfolio Performance</u>
+🔹 Quantity: <b>{quantity}</b>
+🔹 Buy Price: <b>Rs {buy_price}</b>
+🔹 Invested: <b>Rs {invested:,.2f}</b>
+🔹 Current Value: <b>Rs {current_value:,.2f}</b>
+📈 Profit: <b>Rs {profit:,.2f} ({profit_pct:.2f}%)</b>
+            '''
+
         send_telegram_message(chat_id, message)
 
     return {"ok": True}
+
 
 async def manage_company_list(text: str, chat_id: int):
     parts = text.split(" ")
