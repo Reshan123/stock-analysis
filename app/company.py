@@ -11,6 +11,7 @@ async def get_company_info(chat_id: int):
     if portfolio_file.exists():
         with open(portfolio_file) as f:
             portfolio = json.load(f)
+    print(f"Portfolio loaded: {portfolio}")
     # Load the company list
     company_list_file = Path(__file__).resolve().parent / "companyList.txt"
     with open(company_list_file) as f:
