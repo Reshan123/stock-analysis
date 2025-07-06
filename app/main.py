@@ -1,9 +1,10 @@
 from fastapi import FastAPI, Request
-from app.company import get_company_info
-from app.company import get_company_list
-from app.company import manage_company_list
+from app.company.getCompanyInfo import get_company_info
+from app.company.getCompanyList import get_company_list
+from app.company.manageCompanyList import manage_company_list
 from app.recommend import get_stock_recommendation
-from app.utils.telegram import send_telegram_message, markdown_to_telegram_html, clean_telegram_html
+from app.sheets_integrations.updateStockPrices import update_stock_prices
+from app.utils.telegram import send_telegram_message
 
 app = FastAPI()
 
@@ -25,6 +26,8 @@ async def telegram_webhook(request: Request):
         return await manage_company_list(text, chat_id)
     elif text.startswith("/getlist"):
         return await get_company_list(chat_id)
+    elif text.startswith("/updatestockprices"):
+        return await update_stock_prices(chat_id)
     elif text.startswith("/recommend"):
         return await get_stock_recommendation(text, chat_id)
     else:

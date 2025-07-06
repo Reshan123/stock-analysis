@@ -1,15 +1,13 @@
 import re
-
 import httpx
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
+from app.utils.telegram import send_telegram_message
 
-
-async def update_stock_prices():
+async def update_stock_prices(chat_id: int):
     sheet_name = "Financial Overview"
     sheet = connect_to_google_sheet(sheet_name)
-    print(f"Connected to Google Sheet: {sheet_name}")
     if not sheet:
-        print("Failed to connect to Google Sheet.")
+        print(f"Failed to connect to Google Sheet. {sheet}")
         return
     records = sheet.get_all_values()
     if not records:
@@ -37,5 +35,10 @@ async def update_stock_prices():
                 if not data or "reqSymbolInfo" not in data or not data["reqSymbolInfo"].get("lastTradedPrice"):
                     print(f"Invalid stock symbol: {code}")
                     continue  # Skip invalid stock symbols
-                sheet.update_cell(idx, 5, data.reqSymbolInfo.previousClose)  # Column E = index 5
-                print(f"Updated row {idx} with value '{data.reqSymbolInfo.previousClose}' for code '{code}'")
+                update_value = data["reqSymbolInfo"]["lastTradedPrice"]
+                sheet.update_cell(idx, 6, update_value)  # Column E = index 5
+                print(f"Updated row {idx} with value '{update_value}' for code '{code}'")
+    send_telegram_message(
+        chat_id=chat_id,  # Replace with your actual chat ID
+        text=f"<b>Stock prices updated successfully in '{sheet_name}' sheet.</b>"
+    )
