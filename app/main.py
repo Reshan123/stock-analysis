@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Request
+from app.company import get_company_info
+from app.company import get_company_list
+from app.company import manage_company_list
 from app.recommend import get_stock_recommendation
-from app.telegram import send_telegram_message, markdown_to_telegram_html, clean_telegram_html
-from app.company import get_company_info, get_company_list, manage_company_list
-import os
+from app.utils.telegram import send_telegram_message, markdown_to_telegram_html, clean_telegram_html
 
 app = FastAPI()
 
