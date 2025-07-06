@@ -1,14 +1,21 @@
+import base64
+import json
+import os
 from pathlib import Path
 import gspread
 from google.oauth2.service_account import Credentials
 
 def connect_to_google_sheet(sheet_name: str):
     try:
-        creds_path = Path(__file__).resolve().parent / "credentials" / "credentials.json"
+        encoded_creds = os.getenv("GOOGLE_CREDS_BASE64")
+        if not encoded_creds:
+            raise RuntimeError("Missing GOOGLE_CREDS_BASE64 env var")
+
+        service_account_info = json.loads(base64.b64decode(encoded_creds))
         scopes = ["https://www.googleapis.com/auth/spreadsheets", 
                 "https://www.googleapis.com/auth/drive"]
 
-        creds = Credentials.from_service_account_file(creds_path, scopes=scopes)
+        creds = Credentials.from_service_account_file(service_account_info, scopes=scopes)
         client = gspread.authorize(creds)
         sheet = client.open(sheet_name).get_worksheet(1)  
         print(f"Connected to Google Sheet: {sheet_name}")
