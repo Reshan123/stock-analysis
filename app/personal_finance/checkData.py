@@ -21,7 +21,7 @@ async def check_data(chat_id: str):
             if text == "Net Worth":
                 net_worth = row[3]
 
-    formatted = f"💰 <b>Net Worth:</b> ${net_worth}"
+    formatted_net_worth = f"💰 <b>Net Worth:</b> ${net_worth}"
 
     my_money_export_sheet = connect_to_google_sheet("Financial Overview", "My Money Export")
     if not my_money_export_sheet:
@@ -33,9 +33,30 @@ async def check_data(chat_id: str):
         return
     
     last_date = datetime.strptime(my_money_export_records[-1][0], "%m/%d/%Y")
-    print(f"last date: {last_date}")
-    
-    
+    check_date = datetime.today() - timedelta(days=5)
 
+    message = ""
+    if check_date > last_date:
+        message = (
+            "⚠️ <b>Action Required</b>\n\n"
+            "Your <i>Money Export Sheet</i> appears to be outdated.\n\n"
+            f"📅 Last entry: <b>{last_date.strftime('%a %b %d %Y')}</b>\n"
+            "🕒 Please update your <i>Financial Overview</i> now."
+        )
+    else:
+        message = (
+            "✅ <b>All Good!</b>\n\n"
+            "Your <i>Money Export Sheet</i> is up to date.\n\n"
+            f"📅 Last entry: <b>{last_date.strftime('%a %b %d %Y')}</b>\n"
+            "⏳ Next check will be in a week."
+        )
+
+    message += f"\n\n{formatted_net_worth}"
+    message += "\n----------------------------------------------------------------\n"
+    
+    send_telegram_message(
+        chat_id=chat_id,  # Replace with your actual chat ID
+        text=message
+    )  
     
     return {"ok": True}
