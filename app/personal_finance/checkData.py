@@ -20,6 +20,6 @@ async def check_data(chat_id: str):
             if text == "Net Worth":
                 net_worth = row[3]
 
-    formatted = f"💰 <b>Net Worth:</b> ${netWorth}"
+    formatted = f"💰 <b>Net Worth:</b> ${net_worth}"
     print(f"Net worth: {formatted}")
     return {"ok": True}
