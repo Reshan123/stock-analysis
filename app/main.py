@@ -34,12 +34,18 @@ async def telegram_webhook(request: Request):
     elif text.startswith("/checkdata"):
         return await check_data(chat_id)
     else:
-        send_telegram_message(chat_id, "<b>Unknown command.</b>\nTry one of the following:\n"
-                                   "/getlist - List tracked companies\n"
-                                   "/add SYMBOL - Add a stock symbol\n"
-                                   "/remove SYMBOL - Remove a stock symbol\n"
-                                   "/getdetails - Show details for tracked companies\n"
-                                   "/recommend SYMBOL - Get an investment suggestion")
+        send_telegram_message(
+            chat_id,
+            "<b>Unknown command.</b>\n"
+            "Available commands:\n"
+            "/getlist - List tracked companies\n"
+            "/add SYMBOL - Add a stock symbol\n"
+            "/remove SYMBOL - Remove a stock symbol\n"
+            "/getdetails - Show details for tracked companies\n"
+            "/recommend SYMBOL - Get stock advice\n"
+            "/updatestockprices - Update stock prices\n"
+            "/checkdata - Check your data"
+        )
 
     send_telegram_message(chat_id, "<b>Send /recommend <SYMBOL> to get stock advice.</b>")
     return {"ok": True}

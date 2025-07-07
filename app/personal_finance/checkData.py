@@ -16,13 +16,22 @@ async def check_data(chat_id: int):
         return
     
     net_worth = 0
+    my_cse_balance = 0
+    dad_cse_balance = 0
     for idx, row in enumerate(net_worth_records[1:], start=2):  # Skip header, start row index at 2
         if len(row) > 2 and row[1]:  # Check column B
             text = row[1].strip()
             if text == "Net Worth":
                 net_worth = row[3]
+            elif text == "Thaththi CSE":
+                dad_cse_balance = row[4]
+            elif text == "CSE":
+                my_cse_balance = row[3]
 
-    formatted_net_worth = f"💰 <b>Net Worth:</b> ${net_worth}"
+
+    formatted_net_worth = f"💰 <b>Net Worth:</b> {net_worth}"
+    formatted_dad_cse_balance = f"👨‍👦 <b>Dad's CSE Balance:</b> LKR{dad_cse_balance}" if 'dad_cse_balance' in locals() else ""
+    formatted_my_cse_balance = f"👤 <b>My CSE Balance:</b> {my_cse_balance}" if 'my_cse_balance' in locals() else ""
 
     my_money_export_sheet = connect_to_google_sheet("Financial Overview", "My Money Export")
     if not my_money_export_sheet:
@@ -53,6 +62,8 @@ async def check_data(chat_id: int):
         )
 
     message += f"\n\n{formatted_net_worth}"
+    message += f"\n\n{formatted_my_cse_balance}"
+    message += f"\n\n{formatted_dad_cse_balance}"
     message += "\n----------------------------------------------------------------\n"
 
     today = datetime.today()

@@ -1,23 +1,27 @@
-import json
-from pathlib import Path
-import httpx
+from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
+import httpx
 
 
 async def get_company_info(chat_id: int):
     # Load portfolio data if available
-    portfolio_file = Path(__file__).resolve().parent / "portfolio.json"
-    portfolio = {}
-    if portfolio_file.exists():
-        with open(portfolio_file) as f:
-            portfolio = json.load(f)
-    # Load the company list
-    company_list_file = Path(__file__).resolve().parent / "companyList.txt"
-    with open(company_list_file) as f:
-        company_list = f.read().splitlines()
+    cse_sheet = connect_to_google_sheet("Financial Overview", "CSE")
+    url = "https://www.cse.lk/api/companyInfoSummery"
 
-    for stock_symbol in company_list:
-        url = "https://www.cse.lk/api/companyInfoSummery"
+    if not cse_sheet:
+        print(f"Failed to connect to Google Sheet. {cse_sheet}")
+        return
+    cse_records = cse_sheet.get_all_values()
+    if not cse_records:
+        print("No data found in the sheet.")
+        return
+    for idx, row in enumerate(cse_records[1:], start=2):
+        if len(row) < 3 or not row[2].strip():
+            continue
+        elif row[2].strip().upper() == "CODE":
+            continue
+        stock_symbol = row[2].strip().upper()
+
         async with httpx.AsyncClient() as client:
             response = await client.post(url, data={"symbol": stock_symbol})
 
@@ -43,21 +47,19 @@ async def get_company_info(chat_id: int):
         '''
 
         # If stock is in portfolio, add profit details
-        if stock_symbol in portfolio:
-            data = portfolio[stock_symbol]
+        if row[3] != "LKR0.00" and row[3].strip():
             current_price = float(companyMainData["lastTradedPrice"] or 0)
-            quantity = data["quantity"]
-            buy_price = data["buy_price"]
-            invested = quantity * buy_price
+            quantity = float(row[4].strip() or 0)
+            buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
             current_value = quantity * current_price
-            profit = current_value - invested
-            profit_pct = (profit / invested) * 98 if invested > 0 else 0
+            profit = current_value - buy_price
+            profit_pct = (profit / buy_price) * 98 if buy_price > 0 else 0
 
             message += f'''
 📊 <b>Portfolio Performance</b>
-🔹 Quantity: <b>{quantity}</b>
-🔹 Buy Price: <b>Rs {buy_price}</b>
-🔹 Invested: <b>Rs {invested:,.2f}</b>
+🔹 Quantity: <b>{quantity:,.2f}</b>
+🔹 Buy Price: <b>Rs {buy_price:,.2f}</b>
+🔹 Invested: <b>Rs {buy_price:,.2f}</b>
 🔹 Current Value: <b>Rs {current_value:,.2f}</b>
 📈 Profit: <b>Rs {profit:,.2f} ({profit_pct:.2f}%)</b>
             '''
