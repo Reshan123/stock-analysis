@@ -37,7 +37,7 @@ async def get_company_info(chat_id: int):
 <b>{companyMainData['name']} ({stock_symbol})</b>
 📉 Day Range: <b>Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}</b>
 💰 Previous Close: <b>Rs {companyMainData['previousClose']}</b>
-💰 Current Price: <b>Rs {companyMainData['lastTradedPrice']}</b>
+💰 Current Price: <b>Rs {companyMainData['lastTradedPrice'] or 0}</b>
 📈 Change: <b>Rs {companyMainData['change']}</b>
 📦 Volume (Today): <b>{int(companyMainData['tdyShareVolume']):,}</b>
         '''
