@@ -1,7 +1,7 @@
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
+from datetime import datetime, timedelta
 import httpx
-from datetime import datetime
 
 async def check_data(chat_id: str):
     net_worth_sheet = connect_to_google_sheet("Financial Overview", "Net Worth")
