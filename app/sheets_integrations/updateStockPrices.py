@@ -42,3 +42,4 @@ async def update_stock_prices(chat_id: int):
         chat_id=chat_id,  # Replace with your actual chat ID
         text=f"<b>Stock prices updated successfully in '{sheet_name}' sheet.</b>"
     )
+    return {"ok": True}
