@@ -27,7 +27,7 @@ async def check_data(chat_id: str):
     if not my_money_export_sheet:
         print(f"Failed to connect to Google Sheet. {my_money_export_sheet}")
         return
-    my_money_export_records = my_money_export.get_all_values()
+    my_money_export_records = my_money_export_sheet.get_all_values()
     if not my_money_export_records:
         print("No data found in the sheet.")
         return
