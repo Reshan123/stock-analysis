@@ -1,5 +1,6 @@
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
+from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 import httpx
 
@@ -53,7 +54,41 @@ async def check_data(chat_id: str):
 
     message += f"\n\n{formatted_net_worth}"
     message += "\n----------------------------------------------------------------\n"
-    
+
+    today = datetime.today()
+    is_after_24th = today.day >= 25
+    target_date = today + relativedelta(months=1) if is_after_24th else today
+    monthly_sheet_name = target_date.strftime('%B')
+
+    monthly_sheet = connect_to_google_sheet("Salary Breakdown", monthly_sheet_name)
+    if not monthly_sheet:
+        print(f"Failed to connect to Google Sheet. {monthly_sheet}")
+        return
+    monthly_sheet_records = monthly_sheet.get_all_values()
+    if not monthly_sheet_records:
+        print("No data found in the sheet.")
+        return
+    # Filter for rows where the second column is "FALSE"
+    pending_transactions = [row for row in monthly_sheet_records if row[1] == "FALSE"]
+
+    # Create message
+    if pending_transactions:
+        items += "\n".join(
+            f"🔸 {row[0] if row[0] else 'Unnamed Transaction'} | {row[2] if len(row) > 2 and row[2] else '0.00'}"
+            for row in pending_transactions
+        )
+        message = (
+            "⚠️ <b>Pending Transactions</b>\n\n"
+            "The following transactions are still incomplete:\n\n"
+            f"{items}\n\n"
+            "📌 Please review and update them."
+        )
+    else:
+        message += (
+            "✅ <b>All Transactions Completed</b>\n\n"
+            "Everything in your monthly sheet is marked as done. Great job!"
+        )
+
     send_telegram_message(
         chat_id=chat_id,  # Replace with your actual chat ID
         text=message
