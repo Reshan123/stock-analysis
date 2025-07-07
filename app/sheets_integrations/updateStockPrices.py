@@ -5,7 +5,7 @@ from app.utils.telegram import send_telegram_message
 
 async def update_stock_prices(chat_id: int):
     sheet_name = "Financial Overview"
-    sheet = connect_to_google_sheet(sheet_name)
+    sheet = connect_to_google_sheet(sheet_name, "CSE")
     if not sheet:
         print(f"Failed to connect to Google Sheet. {sheet}")
         return

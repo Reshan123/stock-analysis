@@ -5,7 +5,7 @@ from pathlib import Path
 import gspread
 from google.oauth2.service_account import Credentials
 
-def connect_to_google_sheet(sheet_name: str):
+def connect_to_google_sheet(sheet_name: str, work_sheet_name: str):
     try:
         encoded_creds = os.getenv("GOOGLE_CREDS_BASE64")
         if not encoded_creds:
@@ -17,7 +17,7 @@ def connect_to_google_sheet(sheet_name: str):
 
         creds = Credentials.from_service_account_info(service_account_info, scopes=scopes)
         client = gspread.authorize(creds)
-        sheet = client.open(sheet_name).get_worksheet(1)  
+        sheet = client.open(sheet_name).worksheet(work_sheet_name)
         print(f"Connected to Google Sheet: {sheet_name}")
         return sheet
 
