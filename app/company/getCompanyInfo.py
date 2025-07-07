@@ -45,7 +45,7 @@ async def get_company_info(chat_id: int):
         # If stock is in portfolio, add profit details
         if stock_symbol in portfolio:
             data = portfolio[stock_symbol]
-            current_price = float(companyMainData["lastTradedPrice"])
+            current_price = float(companyMainData["lastTradedPrice"] or 0)
             quantity = data["quantity"]
             buy_price = data["buy_price"]
             invested = quantity * buy_price
