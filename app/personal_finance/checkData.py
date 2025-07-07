@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 import httpx
 
-async def check_data(chat_id: str):
+async def check_data(chat_id: int):
     net_worth_sheet = connect_to_google_sheet("Financial Overview", "Net Worth")
 
     if not net_worth_sheet:
@@ -60,7 +60,6 @@ async def check_data(chat_id: str):
     target_date = today + relativedelta(months=1) if is_after_24th else today
     monthly_sheet_name = target_date.strftime('%B')
 
-    print(f"Monthly sheet name: {monthly_sheet_name}")
     monthly_sheet = connect_to_google_sheet("Salary Breakdown", work_sheet_name=monthly_sheet_name)
     if not monthly_sheet:
         print(f"Failed to connect to Google Sheet. {monthly_sheet}")
@@ -74,11 +73,11 @@ async def check_data(chat_id: str):
 
     # Create message
     if pending_transactions:
-        items += "\n".join(
+        items = "\n".join(
             f"🔸 {row[0] if row[0] else 'Unnamed Transaction'} | {row[2] if len(row) > 2 and row[2] else '0.00'}"
             for row in pending_transactions
         )
-        message = (
+        message += (
             "⚠️ <b>Pending Transactions</b>\n\n"
             "The following transactions are still incomplete:\n\n"
             f"{items}\n\n"

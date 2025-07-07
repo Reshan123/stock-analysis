@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import gspread
+import traceback
 from google.oauth2.service_account import Credentials
 
 def connect_to_google_sheet(sheet_name: str, work_sheet_name: str):
@@ -17,10 +18,14 @@ def connect_to_google_sheet(sheet_name: str, work_sheet_name: str):
 
         creds = Credentials.from_service_account_info(service_account_info, scopes=scopes)
         client = gspread.authorize(creds)
+        if not client:
+            raise RuntimeError("Failed to authorize Google Sheets client")
         sheet = client.open(sheet_name).worksheet(work_sheet_name)
-        print(f"Connected to Google Sheet: {sheet_name}")
+        if not sheet:
+            raise ValueError(f"Worksheet '{work_sheet_name}' not found in sheet '{sheet_name}'")
         return sheet
 
     except Exception as e:
         print(f"Failed to connect to Google Sheet: {e}")
+        print(traceback.format_exc())
         return None
