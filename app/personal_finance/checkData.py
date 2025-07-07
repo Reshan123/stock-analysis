@@ -32,7 +32,7 @@ async def check_data(chat_id: str):
         print("No data found in the sheet.")
         return
     
-    last_date = datetime.strptime(my_money_export_records[-1][0], "%m-%d-%Y")
+    last_date = datetime.strptime(my_money_export_records[-1][0], "%m/%d/%Y")
     print(f"last date: {last_date}")
     
     
