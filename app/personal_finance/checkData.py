@@ -61,7 +61,7 @@ async def check_data(chat_id: str):
     monthly_sheet_name = target_date.strftime('%B')
 
     print(f"Monthly sheet name: {monthly_sheet_name}")
-    monthly_sheet = connect_to_google_sheet("Salary Breakdown", monthly_sheet_name)
+    monthly_sheet = connect_to_google_sheet("Salary Breakdown", work_sheet_name=monthly_sheet_name)
     if not monthly_sheet:
         print(f"Failed to connect to Google Sheet. {monthly_sheet}")
         return
