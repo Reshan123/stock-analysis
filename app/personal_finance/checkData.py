@@ -9,7 +9,7 @@ async def check_data(chat_id: str):
     if not net_worth_sheet:
         print(f"Failed to connect to Google Sheet. {net_worth_sheet}")
         return
-    net_worth_records = net_worth.get_all_values()
+    net_worth_records = net_worth_sheet.get_all_values()
     if not net_worth_records:
         print("No data found in the sheet.")
         return
