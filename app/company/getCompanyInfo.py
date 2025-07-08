@@ -55,7 +55,7 @@ async def get_company_info(chat_id: int):
             quantity = float(row[4].strip() or 0)
             buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
             current_value = quantity * current_price
-            profit = (current_value - (current_value * 2 / 100)) - buy_price
+            profit = current_value - buy_price
             profit_pct = (profit / buy_price) * 100 if buy_price > 0 else 0
 
             message += f'''
