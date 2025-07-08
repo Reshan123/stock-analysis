@@ -7,6 +7,10 @@ from app.utils.telegram import send_telegram_message
 
 app = FastAPI()
 
+@app.get("/")
+def root():
+    return {"status": "awake"}
+
 @app.post("/")
 async def telegram_webhook(request: Request):
     payload = await request.json()
