@@ -35,14 +35,11 @@ async def telegram_webhook(request: Request):
         send_telegram_message(
             chat_id,
             "<b>Unknown command.</b>\n"
-            "Available commands:\n"
-            "/getlist - List tracked companies\n"
-            "/add SYMBOL - Add a stock symbol\n"
-            "/remove SYMBOL - Remove a stock symbol\n"
+            "Available commands:\n\n"
             "/getdetails - Show details for tracked companies\n"
             "/recommend SYMBOL - Get stock advice\n"
             "/updatestockprices - Update stock prices\n"
-            "/checkdata - Check your data"
+            "/checkdata - Check current finacial position"
         )
 
     send_telegram_message(chat_id, "<b>Send /recommend <SYMBOL> to get stock advice.</b>")
