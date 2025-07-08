@@ -17,8 +17,8 @@ async def get_company_info(chat_id: int):
         return
     for idx, row in enumerate(cse_records[1:], start=2):
         stock_symbol = ""
-        if pattern.match(symbol):
-            stock_symbol = row[2].strip().upper()
+        if pattern.match(row[2].strip()):
+            stock_symbol = row[2].strip()
         else:
             continue
 
