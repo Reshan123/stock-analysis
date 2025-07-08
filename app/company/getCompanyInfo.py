@@ -1,10 +1,10 @@
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
 import httpx
-
+import re
 
 async def get_company_info(chat_id: int):
-    # Load portfolio data if available
+    pattern = re.compile(r"^[A-Z]{3,}\.N\d{4}$")
     cse_sheet = connect_to_google_sheet("Financial Overview", "CSE")
     url = "https://www.cse.lk/api/companyInfoSummery"
 
@@ -16,12 +16,15 @@ async def get_company_info(chat_id: int):
         print("No data found in the sheet.")
         return
     for idx, row in enumerate(cse_records[1:], start=2):
-        if len(row) < 3 or not row[2].strip():
+        stock_symbol = ""
+        if pattern.match(symbol):
+            stock_symbol = row[2].strip().upper()
+        else:
             continue
-        elif row[2].strip().upper() == "CODE":
-            continue
-        stock_symbol = row[2].strip().upper()
 
+        if stock_symbol == "":
+            continue
+        
         async with httpx.AsyncClient() as client:
             response = await client.post(url, data={"symbol": stock_symbol})
 
