@@ -22,12 +22,12 @@ async def get_company_info(chat_id: int):
         if pattern.match(row[2].strip()):
             stock_symbol = row[2].strip()
         elif row[2].strip() == "Actual Cost":
-            current_total_value = row[3].strip()
+            current_total_cost = float(row[3].strip().replace("LKR", "").replace(",", ""))
         else:
             continue
         
-        print("Acatual Cost ", current_total_value)
-        print(type(current_total_value))
+        print("Acatual Cost ", current_total_cost)
+        print(type(current_total_cost))
         if stock_symbol == "":
             continue
         
