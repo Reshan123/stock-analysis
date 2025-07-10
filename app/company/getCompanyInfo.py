@@ -25,9 +25,7 @@ async def get_company_info(chat_id: int):
             current_total_cost = float(row[3].strip().replace("LKR", "").replace(",", ""))
         else:
             continue
-        
-        print("Acatual Cost ", current_total_cost)
-        print(type(current_total_cost))
+
         if stock_symbol == "":
             continue
         
@@ -76,5 +74,5 @@ async def get_company_info(chat_id: int):
 
         send_telegram_message(chat_id, message)
         
-    send_telegram_message(chat_id, f"<b>Total Profit: Rs {current_total_value:,.2f}</b>")
+    send_telegram_message(chat_id, f"<b>Total Profit: Rs {(current_total_value-current_total_cost):,.2f}</b>")
     return {"ok": True}
