@@ -15,14 +15,19 @@ async def get_company_info(chat_id: int):
     if not cse_records:
         print("No data found in the sheet.")
         return
-    total_profti = 0
+    current_total_value = 0
+    current_total_cost = 0
     for idx, row in enumerate(cse_records[1:], start=2):
         stock_symbol = ""
         if pattern.match(row[2].strip()):
             stock_symbol = row[2].strip()
+        elif row[2].strip() == "Actual Cost":
+            current_total_value = row[3].strip()
         else:
             continue
-
+        
+        print("Acatual Cost ", current_total_value)
+        print(type(current_total_value))
         if stock_symbol == "":
             continue
         
@@ -56,7 +61,7 @@ async def get_company_info(chat_id: int):
             quantity = float(row[4].strip() or 0)
             buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
             current_value = quantity * current_price
-            total_profti += (current_value - (current_value * 1.25 / 100)) - buy_price
+            current_total_value += (current_value - (current_value * 1.25 / 100))
             profit = (current_value - (current_value * 1.25 / 100)) - buy_price
             profit_pct = (profit / buy_price) * 100 if buy_price > 0 else 0
 
@@ -71,5 +76,5 @@ async def get_company_info(chat_id: int):
 
         send_telegram_message(chat_id, message)
         
-    send_telegram_message(chat_id, f"<b>Total Profit: Rs {total_profti:,.2f}</b>")
+    send_telegram_message(chat_id, f"<b>Total Profit: Rs {current_total_value:,.2f}</b>")
     return {"ok": True}
