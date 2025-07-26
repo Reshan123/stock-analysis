@@ -14,6 +14,7 @@ def root():
 @app.post("/")
 async def telegram_webhook(request: Request):
     payload = await request.json()
+    print(f"Payload : {payload}" )
     if payload.message == "autoRun":
         chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
         await update_stock_prices(chat_id)
