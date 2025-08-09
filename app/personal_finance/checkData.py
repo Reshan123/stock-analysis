@@ -34,8 +34,8 @@ async def check_data(chat_id: int):
 
     formatted_net_worth = f"💰 <b>Net Worth:</b> {net_worth}"
     formatted_dad_cse_balance = f"👨‍👦 <b>Dad's CSE Balance:</b> LKR{dad_cse_balance}" if 'dad_cse_balance' in locals() else ""
-    formatted_my_unit_trust_balance = f"👤 <b>My Unit Trust Balance:</b> {my_unit_trust_balance}" if my_unit_trust_balance in locals() else ""
-    formatted_my_cse_balance = f"👤 <b>My CSE Balance:</b> {my_cse_balance}" if my_cse_balance in locals() else ""
+    formatted_my_unit_trust_balance = f"👤 <b>My Unit Trust Balance:</b> {my_unit_trust_balance}" if 'my_unit_trust_balance' in locals() else ""
+    formatted_my_cse_balance = f"👤 <b>My CSE Balance:</b> {my_cse_balance}" if 'my_cse_balance' in locals() else ""
 
     my_money_export_sheet = connect_to_google_sheet("Financial Overview", "My Money Export")
     if not my_money_export_sheet:
