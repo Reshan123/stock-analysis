@@ -2,8 +2,9 @@ import requests
 import os
 
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
+from app.utils.telegram import send_telegram_message
 
-async def get_cal_data():
+async def get_cal_data(chat_id: int):
     payload = "username=200235800042&password=f4f8fd7d2eecb324f94a813a6fbc12f5a222ef8e5c99b8feab01a3379ec8f362eQJ4SehgroebHxcchN4uIA%3D%3D&captchaResponse=undefined%2C&captchaAttempts=1&grant_type=password&scope=trust"
 
     tokenResponse = requests.post("https://portal.cal.lk/oauth/token", data=payload, headers={
@@ -35,5 +36,9 @@ async def get_cal_data():
         if len(row) > 2 and row[1]:  # Check column B
             text = row[1].strip()
             if text == "Unit Trust":
-                net_worth_sheet.update_cell(idx, 6, calUnitsTotal)  # Column E = index 5
+                net_worth_sheet.update_cell(idx, 4, calUnitsTotal)  # Column E = index 5
                 print(f"Updated row {idx} with value '{calUnitsTotal}' for Unit Trust")
+    send_telegram_message(
+        chat_id=chat_id,  # Replace with your actual chat ID
+        text=f"<b>Unit prices updated successfully in 'Financial Overview' sheet.</b>"
+    )

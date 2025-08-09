@@ -28,13 +28,12 @@ async def telegram_webhook(request: Request):
     if text.startswith("/getdetails"):
         return await get_company_info(chat_id)
     elif text.startswith("/updatestockprices"):
+        await get_cal_data(chat_id)
         return await update_stock_prices(chat_id)
     elif text.startswith("/recommend"):
         return await get_stock_recommendation(text, chat_id)
     elif text.startswith("/checkdata"):
         return await check_data(chat_id)
-    elif text.startswith("/cal"):
-        return await get_cal_data()
     else:
         send_telegram_message(
             chat_id,
