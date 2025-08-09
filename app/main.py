@@ -4,6 +4,7 @@ from app.company.getCompanyInfo import get_company_info
 from app.personal_finance.checkData import check_data
 from app.recommend import get_stock_recommendation
 from app.sheets_integrations.updateStockPrices import update_stock_prices
+from app.utils.getCalData import get_cal_data
 from app.utils.telegram import send_telegram_message
 
 app = FastAPI()
@@ -12,14 +13,9 @@ app = FastAPI()
 def root():
     return {"status": "awake"}
 
-@app.post("/")
+@app.post("/webhook")
 async def telegram_webhook(request: Request):
     payload = await request.json()
-    if payload["message"] == "autoRun":
-        chat_id = os.getenv("TELEGRAM_CHAT_ID", "")
-        await update_stock_prices(chat_id)
-        return await check_data(chat_id)
-    
     message = payload.get("message")
     
     if not message:
@@ -37,6 +33,8 @@ async def telegram_webhook(request: Request):
         return await get_stock_recommendation(text, chat_id)
     elif text.startswith("/checkdata"):
         return await check_data(chat_id)
+    elif text.startswith("/cal"):
+        return await get_cal_data()
     else:
         send_telegram_message(
             chat_id,
