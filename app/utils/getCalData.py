@@ -2,6 +2,7 @@ import requests
 import os
 
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
+from app.utils.telegram import send_telegram_message
 
 async def get_cal_data():
     payload = os.getenv("CAL_AUTH_PAYLOAD")
@@ -21,7 +22,7 @@ async def get_cal_data():
     })
 
     calData = calData.json()
-    calUnitsTotal = calData["balances"]["total"]
+    calUnitsTotal = calData["total"]
     print(f"Cal Data: {calUnitsTotal}")
 
     net_worth_sheet = connect_to_google_sheet("Financial Overview", "Net Worth")
@@ -34,5 +35,9 @@ async def get_cal_data():
         if len(row) > 2 and row[1]:  # Check column B
             text = row[1].strip()
             if text == "Unit Trust":
-                net_worth_sheet.update_cell(idx, 6, calUnitsTotal)  # Column E = index 5
+                net_worth_sheet.update_cell(idx, 4, calUnitsTotal)  # Column E = index 5
                 print(f"Updated row {idx} with value '{calUnitsTotal}' for Unit Trust")
+    send_telegram_message(
+        chat_id=chat_id,  # Replace with your actual chat ID
+        text=f"<b>Unit prices updated successfully in 'Financial Overview' sheet.</b>"
+    )
