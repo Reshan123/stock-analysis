@@ -21,7 +21,7 @@ async def get_cal_data():
     })
 
     calData = calData.json()
-    calUnitsTotal = calData["balances"]["total"]
+    calUnitsTotal = calData["balances"][0]["total"]
     print(f"Cal Data: {calUnitsTotal}")
     # {'balances': [{'crmId': '3e64e4d1-80c7-ef11-a72f-000d3a80655d', 'balance': 53510.36, 'formattedBalance': '53,510.36', 'division': 'UNIT_TRUST', 'accountType': 'INDIVIDUAL', 'accountName': 'Mr. Gomis', 'utTransactionsEnabled': True, 'pwmValuationDate': None, 'clientCode': 'ILG0595'}], 'total': 53510.36, 'totalNonCorporateBalance': 53510.36, 'productWiseBalance': {'CALI': {'TOTAL': '53,510.36', 'JOINT': '', 'CORPORATE': '', 'INDIVIDUAL': '53,510.36'}}, 'products': ['CALI']}
 
