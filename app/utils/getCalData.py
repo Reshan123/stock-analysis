@@ -4,7 +4,7 @@ import os
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
 
-async def get_cal_data():
+async def get_cal_data(chat_id: int):
     payload = os.getenv("CAL_AUTH_PAYLOAD")
 
     cal_auth_token = os.getenv("CAL_AUTH_TOKEN")
