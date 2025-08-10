@@ -4,7 +4,7 @@ from app.company.getCompanyInfo import get_company_info
 from app.personal_finance.checkData import check_data
 from app.recommend import get_stock_recommendation
 from app.sheets_integrations.updateStockPrices import update_stock_prices
-from app.utils.getCalData import get_cal_data
+from app.cal_integrations.getCalData import get_cal_data
 from app.utils.telegram import send_telegram_message
 
 app = FastAPI()
