@@ -4,47 +4,48 @@ import httpx
 import re
 
 async def get_company_info(chat_id: int):
-    pattern = re.compile(r"^[A-Z]{3,}\.N\d{4}$")
-    cse_sheet = connect_to_google_sheet("Financial Overview", "CSE")
-    url = "https://www.cse.lk/api/companyInfoSummery"
+    try:
+        pattern = re.compile(r"^[A-Z]{3,}\.N\d{4}$")
+        cse_sheet = connect_to_google_sheet("Financial Overview", "CSE")
+        url = "https://www.cse.lk/api/companyInfoSummery"
 
-    if not cse_sheet:
-        print(f"Failed to connect to Google Sheet. {cse_sheet}")
-        return
-    cse_records = cse_sheet.get_all_values()
-    if not cse_records:
-        print("No data found in the sheet.")
-        return
-    current_total_value = 0
-    current_total_cost = 0
-    for idx, row in enumerate(cse_records[1:], start=2):
-        stock_symbol = ""
-        if pattern.match(row[2].strip()):
-            stock_symbol = row[2].strip()
-        elif row[2].strip() == "Actual Cost":
-            current_total_cost = float(row[3].strip().replace("LKR", "").replace(",", ""))
-        else:
-            continue
+        if not cse_sheet:
+            print(f"Failed to connect to Google Sheet. {cse_sheet}")
+            return
+        cse_records = cse_sheet.get_all_values()
+        if not cse_records:
+            print("No data found in the sheet.")
+            return
+        current_total_value = 0
+        current_total_cost = 0
+        for idx, row in enumerate(cse_records[1:], start=2):
+            stock_symbol = ""
+            if pattern.match(row[2].strip()):
+                stock_symbol = row[2].strip()
+            elif row[2].strip() == "Actual Cost":
+                current_total_cost = float(row[3].strip().replace("LKR", "").replace(",", ""))
+            else:
+                continue
 
-        if stock_symbol == "":
-            continue
-        
-        async with httpx.AsyncClient() as client:
-            response = await client.post(url, data={"symbol": stock_symbol})
+            if stock_symbol == "":
+                continue
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, data={"symbol": stock_symbol})
 
-        if response.status_code != 200:
-            send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
-            continue
+            if response.status_code != 200:
+                send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
+                continue
 
-        company_info = response.json()
-        if not company_info or "reqSymbolInfo" not in company_info:
-            send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
-            continue
+            company_info = response.json()
+            if not company_info or "reqSymbolInfo" not in company_info:
+                send_telegram_message(chat_id, f"<b>Invalid stock symbol: {stock_symbol}</b>")
+                continue
 
-        companyMainData = company_info["reqSymbolInfo"]
+            companyMainData = company_info["reqSymbolInfo"]
 
-        # Base message (always shown)
-        message = f'''
+            # Base message (always shown)
+            message = f'''
 <b>{companyMainData['name']} ({stock_symbol})</b>
 📉 Day Range: <b>Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}</b>
 💰 Previous Close: <b>Rs {companyMainData['previousClose']}</b>
@@ -53,17 +54,17 @@ async def get_company_info(chat_id: int):
 📦 Volume (Today): <b>{int(companyMainData['tdyShareVolume']):,}</b>
         '''
 
-        # If stock is in portfolio, add profit details
-        if row[3] != "LKR0.00" and row[3].strip():
-            current_price = float(companyMainData["lastTradedPrice"] or 0)
-            quantity = float(row[4].strip() or 0)
-            buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
-            current_value = quantity * current_price
-            current_total_value += (current_value - (current_value * 1.25 / 100))
-            profit = (current_value - (current_value * 1.25 / 100)) - buy_price
-            profit_pct = (profit / buy_price) * 100 if buy_price > 0 else 0
+            # If stock is in portfolio, add profit details
+            if row[3] != "LKR0.00" and row[3].strip():
+                current_price = float(companyMainData["lastTradedPrice"] or 0)
+                quantity = float(row[4].strip() or 0)
+                buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
+                current_value = quantity * current_price
+                current_total_value += (current_value - (current_value * 1.25 / 100))
+                profit = (current_value - (current_value * 1.25 / 100)) - buy_price
+                profit_pct = (profit / buy_price) * 100 if buy_price > 0 else 0
 
-            message += f'''
+                message += f'''
 📊 <b>Portfolio Performance</b>
 🔹 Quantity: <b>{quantity:,.2f}</b>
 🔹 Buy Price: <b>Rs {buy_price:,.2f}</b>
@@ -72,7 +73,12 @@ async def get_company_info(chat_id: int):
 📈 Profit: <b>Rs {profit:,.2f} ({profit_pct:.2f}%)</b>
             '''
 
-        send_telegram_message(chat_id, message)
-        
-    send_telegram_message(chat_id, f"<b>Total Profit: Rs {(current_total_value-current_total_cost):,.2f}</b>")
-    return {"ok": True}
+            send_telegram_message(chat_id, message)
+            
+        send_telegram_message(chat_id, f"<b>Total Profit: Rs {(current_total_value-current_total_cost):,.2f}</b>")
+    except Exception as e:
+        print(f"Error in get_company_info: {e}")
+        send_telegram_message(
+            chat_id=chat_id,  # Replace with your actual chat ID
+            text=f"<b>Error fetching company info: {e}</b>"
+        )
