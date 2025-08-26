@@ -1,4 +1,5 @@
 import os
+import asyncio
 from fastapi import FastAPI, Request
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -11,23 +12,14 @@ from app.utils.telegram import send_telegram_message
 
 app = FastAPI()
 
-# Replace this with your personal Telegram chat_id
-# Or fetch from env variable if you want it configurable
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "<your_chat_id>")
 
-# Create scheduler
 scheduler = BackgroundScheduler()
 
-@app.on_event("startup")
-async def start_scheduler():
-    # Define job: runs every day at 15:00 Asia/Colombo (GMT+5:30)
-    await scheduler.add_job(
-        await run_daily_tasks,
-        CronTrigger(hour=20, minute=42, timezone="Asia/Colombo"),
-        id="daily_stock_job",
-        replace_existing=True
-    )
-    scheduler.start()
+# --- wrapper so APScheduler can run async tasks ---
+def run_daily_tasks_wrapper():
+    loop = asyncio.get_event_loop()
+    loop.create_task(run_daily_tasks())
 
 async def run_daily_tasks():
     """Run the 3 tasks daily at 3PM Sri Lanka time."""
@@ -38,6 +30,16 @@ async def run_daily_tasks():
         send_telegram_message(CHAT_ID, "✅ Daily stock and finance update completed.")
     except Exception as e:
         send_telegram_message(CHAT_ID, f"❌ Error running daily job: {str(e)}")
+
+@app.on_event("startup")
+def start_scheduler():
+    scheduler.add_job(
+        run_daily_tasks_wrapper,
+        CronTrigger(hour=15, minute=0, timezone="Asia/Colombo"),
+        id="daily_stock_job",
+        replace_existing=True
+    )
+    scheduler.start()
 
 @app.get("/")
 def root():
