@@ -27,7 +27,6 @@ async def run_daily_tasks():
         await get_cal_data(CHAT_ID)
         await update_stock_prices(CHAT_ID)
         await check_data(CHAT_ID)
-        send_telegram_message(CHAT_ID, "✅ Daily stock and finance update completed.")
         print("✅ Daily stock and finance update completed.")
     except Exception as e:
         send_telegram_message(CHAT_ID, f"❌ Error running daily job: {str(e)}")
@@ -40,7 +39,7 @@ async def start_scheduler():
 
     scheduler.add_job(
         run_daily_tasks_wrapper,
-        CronTrigger(hour=20, minute=56, timezone="Asia/Colombo"),
+        CronTrigger(hour=15, minute=00, timezone="Asia/Colombo"),
         id="daily_stock_job",
         replace_existing=True
     )
