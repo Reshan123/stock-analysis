@@ -35,7 +35,7 @@ async def run_daily_tasks():
 def start_scheduler():
     scheduler.add_job(
         run_daily_tasks_wrapper,
-        CronTrigger(hour=15, minute=0, timezone="Asia/Colombo"),
+        CronTrigger(hour=20, minute=46, timezone="Asia/Colombo"),
         id="daily_stock_job",
         replace_existing=True
     )
