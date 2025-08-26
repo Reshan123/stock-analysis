@@ -19,11 +19,11 @@ CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 scheduler = BackgroundScheduler()
 
 @app.on_event("startup")
-def start_scheduler():
+async def start_scheduler():
     # Define job: runs every day at 15:00 Asia/Colombo (GMT+5:30)
     await scheduler.add_job(
         await run_daily_tasks,
-        CronTrigger(hour=20, minute=40, timezone="Asia/Colombo"),
+        CronTrigger(hour=20, minute=42, timezone="Asia/Colombo"),
         id="daily_stock_job",
         replace_existing=True
     )
