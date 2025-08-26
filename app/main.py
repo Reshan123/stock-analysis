@@ -15,11 +15,11 @@ app = FastAPI()
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "<your_chat_id>")
 
 scheduler = BackgroundScheduler()
+main_loop = None  # store reference to FastAPI's asyncio loop
 
-# --- wrapper so APScheduler can run async tasks ---
+# --- wrapper so APScheduler can run async tasks safely ---
 def run_daily_tasks_wrapper():
-    loop = asyncio.get_event_loop()
-    loop.create_task(run_daily_tasks())
+    asyncio.run_coroutine_threadsafe(run_daily_tasks(), main_loop)
 
 async def run_daily_tasks():
     """Run the 3 tasks daily at 3PM Sri Lanka time."""
@@ -28,18 +28,24 @@ async def run_daily_tasks():
         await update_stock_prices(CHAT_ID)
         await check_data(CHAT_ID)
         send_telegram_message(CHAT_ID, "✅ Daily stock and finance update completed.")
+        print("✅ Daily stock and finance update completed.")
     except Exception as e:
         send_telegram_message(CHAT_ID, f"❌ Error running daily job: {str(e)}")
+        print(f"❌ Error running daily job: {e}")
 
 @app.on_event("startup")
-def start_scheduler():
+async def start_scheduler():
+    global main_loop
+    main_loop = asyncio.get_event_loop()  # capture FastAPI's loop
+
     scheduler.add_job(
         run_daily_tasks_wrapper,
-        CronTrigger(hour=20, minute=46, timezone="Asia/Colombo"),
+        CronTrigger(hour=20, minute=51, timezone="Asia/Colombo"),
         id="daily_stock_job",
         replace_existing=True
     )
     scheduler.start()
+    print("📅 Scheduler started. Daily job scheduled for 3PM Asia/Colombo.")
 
 @app.get("/")
 def root():
