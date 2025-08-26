@@ -46,7 +46,7 @@ async def check_data(chat_id: int):
         if not my_money_export_records:
             print("No data found in the sheet.")
             return
-        print(datetime.strptime(my_money_export_records[-1][0], "%m/%d/%Y"))
+        print(f"Last cell: {my_money_export_records[-1][0]}")
         last_date = datetime.strptime(my_money_export_records[-1][0], "%m/%d/%Y")
         check_date = datetime.today() - timedelta(days=5)
 
@@ -117,3 +117,4 @@ async def check_data(chat_id: int):
             text=f"<b>Error checking data: {e}</b>"
 
         )
+
