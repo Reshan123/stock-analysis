@@ -84,3 +84,27 @@ async def telegram_webhook(request: Request):
 
     send_telegram_message(chat_id, "<b>Send /recommend <SYMBOL> to get stock advice.</b>")
     return {"ok": True}
+    
+@app.post("/webhook_v2")
+async def telegram_webhook(request: Request):
+    payload = await request.json()
+    message = payload.get("message")
+
+    if not message:
+        return {"ok": False}
+    
+    chat_id = message["chat"]["id"]
+    text = message.get("text", "")
+    print(f"Received message: {text} from chat_id: {chat_id}")
+
+    if text.startswith("/getdetails"):
+        return await get_company_info(chat_id, 2)
+    else:
+        send_telegram_message(
+            chat_id,
+            "<b>Unknown command.</b>\n"
+            "Available commands:\n\n"
+            "/getdetails - Show details for tracked companies\n",
+            2
+        )
+    return {"ok": True}
