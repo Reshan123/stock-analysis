@@ -3,7 +3,7 @@ from app.utils.telegram import send_telegram_message
 import httpx
 import re
 
-async def get_company_info(chat_id: int):
+async def get_company_info(chat_id: int, bot_version = 1):
     try:
         pattern = re.compile(r"^[A-Z]{3,}\.N\d{4}$")
         cse_sheet = connect_to_google_sheet("Financial Overview", "CSE")
@@ -73,12 +73,13 @@ async def get_company_info(chat_id: int):
 📈 Profit: <b>Rs {profit:,.2f} ({profit_pct:.2f}%)</b>
             '''
 
-            send_telegram_message(chat_id, message)
+            send_telegram_message(chat_id, message, bot_version)
             
-        send_telegram_message(chat_id, f"<b>Total Profit: Rs {(current_total_value-current_total_cost):,.2f}</b>")
+        send_telegram_message(chat_id, f"<b>Total Profit: Rs {(current_total_value-current_total_cost):,.2f}</b>", bot_version)
     except Exception as e:
         print(f"Error in get_company_info: {e}")
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
-            text=f"<b>Error fetching company info: {e}</b>"
+            text=f"<b>Error fetching company info: {e}</b>",
+            bot_version
         )
