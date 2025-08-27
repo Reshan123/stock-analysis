@@ -81,5 +81,5 @@ async def get_company_info(chat_id: int, bot_version = 1):
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
             text=f"<b>Error fetching company info: {e}</b>",
-            bot_version
+            bot_version=bot_version
         )
