@@ -38,10 +38,6 @@ async def get_cal_data(chat_id: int):
                 if text == "Unit Trust":
                     net_worth_sheet.update_cell(idx, 4, calUnitsTotal)  # Column E = index 5
                     print(f"Updated row {idx} with value '{calUnitsTotal}' for Unit Trust")
-        send_telegram_message(
-            chat_id=chat_id,  # Replace with your actual chat ID
-            text=f"<b>Unit prices updated successfully in 'Financial Overview' sheet.</b>"
-        )
     except Exception as e:
         print(f"Error in get_cal_data: {e}")
         send_telegram_message(
