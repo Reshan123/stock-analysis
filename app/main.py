@@ -1,6 +1,7 @@
 import os
 import asyncio
 from fastapi import FastAPI, Request
+from fastapi.responses import Response
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from app.company.getCompanyInfo import get_company_info
@@ -108,3 +109,7 @@ async def telegram_webhook(request: Request):
             2
         )
     return {"ok": True}
+
+@app.head("/")
+def root_head():
+    return Response(status_code=200)
