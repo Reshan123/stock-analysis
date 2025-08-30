@@ -58,7 +58,8 @@ async def get_company_info(chat_id: int, bot_version = 1):
             if row[3] != "LKR0.00" and row[3].strip():
                 current_price = float(companyMainData["lastTradedPrice"] or 0)
                 quantity = float(row[4].strip() or 0)
-                buy_price = float(row[3].strip().replace("LKR", "").replace(",", ""))
+                invested = float(row[3].strip().replace("LKR", "").replace(",", ""))
+                buy_price = invested / quantity
                 current_value = quantity * current_price
                 current_total_value += (current_value - (current_value * 1.25 / 100))
                 profit = (current_value - (current_value * 1.25 / 100)) - buy_price
@@ -68,7 +69,7 @@ async def get_company_info(chat_id: int, bot_version = 1):
 📊 <b>Portfolio Performance</b>
 🔹 Quantity: <b>{quantity:,.2f}</b>
 🔹 Buy Price: <b>Rs {buy_price:,.2f}</b>
-🔹 Invested: <b>Rs {buy_price:,.2f}</b>
+🔹 Invested: <b>Rs {invested:,.2f}</b>
 🔹 Current Value: <b>Rs {current_value:,.2f}</b>
 📈 Profit: <b>Rs {profit:,.2f} ({profit_pct:.2f}%)</b>
             '''
