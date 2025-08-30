@@ -62,8 +62,8 @@ async def get_company_info(chat_id: int, bot_version = 1):
                 buy_price = invested / quantity
                 current_value = quantity * current_price
                 current_total_value += (current_value - (current_value * 1.25 / 100))
-                profit = (current_value - (current_value * 1.25 / 100)) - buy_price
-                profit_pct = (profit / buy_price) * 100 if buy_price > 0 else 0
+                profit = (current_value - (current_value * 1.25 / 100)) - invested
+                profit_pct = (profit / invested) * 100 if invested > 0 else 0
 
                 message += f'''
 📊 <b>Portfolio Performance</b>
