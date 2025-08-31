@@ -3,7 +3,7 @@ import httpx
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
 
-async def update_stock_prices(chat_id: int):
+async def update_stock_prices(chat_id: int, bot_version = 1):
     try:
         sheet_name = "Financial Overview"
         sheet = connect_to_google_sheet(sheet_name, "CSE")
@@ -39,9 +39,16 @@ async def update_stock_prices(chat_id: int):
                     update_value = data["reqSymbolInfo"]["lastTradedPrice"]
                     sheet.update_cell(idx, 6, update_value)  # Column E = index 5
                     print(f"Updated row {idx} with value '{update_value}' for code '{code}'")
+        if bot_version == 2:
+            send_telegram_message(
+                chat_id=chat_id,  # Replace with your actual chat ID
+                text=f"<b>✅ Unit Trust Values Updated Successfully</b>"
+                bot_version=bot_version
+            )
     except Exception as e:
         print(f"Error in update_stock_prices: {e}")
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
             text=f"<b>Error updating stock prices: {e}</b>"
+            bot_version=bot_version
         )

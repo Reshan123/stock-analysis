@@ -4,7 +4,7 @@ import os
 from app.utils.connectToGoogleSheet import connect_to_google_sheet
 from app.utils.telegram import send_telegram_message
 
-async def get_cal_data(chat_id: int):
+async def get_cal_data(chat_id: int, bot_version = 1):
     try:
         payload = os.getenv("CAL_AUTH_PAYLOAD")
 
@@ -38,9 +38,17 @@ async def get_cal_data(chat_id: int):
                 if text == "Unit Trust":
                     net_worth_sheet.update_cell(idx, 4, calUnitsTotal)  # Column E = index 5
                     print(f"Updated row {idx} with value '{calUnitsTotal}' for Unit Trust")
+        if bot_version == 2:
+            send_telegram_message(
+                chat_id=chat_id,  # Replace with your actual chat ID
+                text=f"<b>✅ Unit Trust Values Updated Successfully</b>"
+                bot_version=bot_version
+            )    
+
     except Exception as e:
         print(f"Error in get_cal_data: {e}")
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
             text=f"<b>Error updating Unit Trust prices: {e}</b>"
+            bot_version=bot_version
         )
