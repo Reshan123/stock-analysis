@@ -42,7 +42,7 @@ async def update_stock_prices(chat_id: int, bot_version = 1):
         if bot_version == 2:
             send_telegram_message(
                 chat_id=chat_id,  # Replace with your actual chat ID
-                text=f"<b>✅ Unit Trust Values Updated Successfully</b>"
+                text=f"<b>✅ Unit Trust Values Updated Successfully</b>",
                 bot_version=bot_version
             )
     except Exception as e:
