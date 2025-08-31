@@ -40,12 +40,17 @@ async def start_scheduler():
 
     scheduler.add_job(
         run_daily_tasks_wrapper,
-        CronTrigger(hour=15, minute=00, timezone="Asia/Colombo"),
+        CronTrigger(
+            hour=15,
+            minute=0,
+            day_of_week="mon-fri",
+            timezone="Asia/Colombo"
+        ),
         id="daily_stock_job",
         replace_existing=True
     )
     scheduler.start()
-    print("📅 Scheduler started. Daily job scheduled for 3PM Asia/Colombo.")
+    print("📅 Scheduler started. Daily job scheduled for 3PM Asia/Colombo (weekdays only).")
 
 @app.get("/")
 def root():
