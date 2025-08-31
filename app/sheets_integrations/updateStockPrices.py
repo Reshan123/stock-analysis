@@ -49,6 +49,6 @@ async def update_stock_prices(chat_id: int, bot_version = 1):
         print(f"Error in update_stock_prices: {e}")
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
-            text=f"<b>Error updating stock prices: {e}</b>"
+            text=f"<b>Error updating stock prices: {e}</b>",
             bot_version=bot_version
         )
