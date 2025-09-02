@@ -26,7 +26,7 @@ async def data_pipeline(chat_id: int, bot_version = 1):
             df.loc[df['CATEGORY'] == 'Savings', 'TYPE'] = 'Investment'
 
             # remove mom savings category
-            df = df[df['CATEGORY'] != 'Moms Savings']
+            df = df[df['CATEGORY'] != 'Moms savings']
 
             print("Successfully loaded CSV into DataFrame:")
 
