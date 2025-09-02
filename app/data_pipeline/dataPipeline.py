@@ -20,6 +20,11 @@ async def data_pipeline(bot_version = 1):
             df['TIME'] = pd.to_datetime(df['TIME'])
             df['TIME'] = df['TIME'].dt.strftime('%#m/%#d/%Y')
 
+            # other transforms
+
+            #if category is savings type changed to investments
+            df.loc[df['CATEGORY'] == 'Savings', 'TYPE'] = 'Investment'
+
             print("Successfully loaded CSV into DataFrame:")
             print(df.head())
 
