@@ -25,6 +25,9 @@ async def data_pipeline(chat_id: int, bot_version = 1):
             #if category is savings type changed to investments
             df.loc[df['CATEGORY'] == 'Savings', 'TYPE'] = 'Investment'
 
+            # remove mom savings category
+            df = df[df['CATEGORY'] != 'Moms Savings']
+
             print("Successfully loaded CSV into DataFrame:")
 
             sheet_name = "Financial Overview"
