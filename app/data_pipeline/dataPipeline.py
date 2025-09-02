@@ -38,7 +38,7 @@ async def data_pipeline(bot_version = 1):
                 data_to_append = df.values.tolist()
                 
                 # --- 4. Append the data to the worksheet ---
-                sheet.append_rows(data_to_append)
+                sheet.insert_rows(data_to_append, row=2, value_input_option='USER_ENTERED')
                 
                 print(f"✅ Success! Appended {len(data_to_append)} rows to 'Sheet17'.")
 
