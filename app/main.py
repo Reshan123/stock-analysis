@@ -78,6 +78,8 @@ async def telegram_webhook(request: Request):
         return await get_stock_recommendation(text, chat_id)
     elif text.startswith("/checkdata"):
         return await check_data(chat_id)
+    elif text.startswith("/rundatapipeline"):
+        return await data_pipeline(chat_id)
     else:
         send_telegram_message(
             chat_id,
