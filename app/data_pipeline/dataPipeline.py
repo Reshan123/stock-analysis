@@ -41,7 +41,7 @@ async def data_pipeline(chat_id: int, bot_version = 1):
                 data_to_append = df.values.tolist()
                 
                 # --- 4. Append the data to the worksheet ---
-                sheet.insert_rows(data_to_append, row=2, value_input_option='USER_ENTERED')
+                sheet.insert_rows(data_to_append, row=3, value_input_option='USER_ENTERED')
                 
                 print(f"✅ Success! Appended {len(data_to_append)} rows to {work_sheet_name}.")
 
