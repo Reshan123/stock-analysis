@@ -110,7 +110,7 @@ async def telegram_webhook(request: Request):
         await get_cal_data(chat_id, 2)
         return await update_stock_prices(chat_id, 2)
     elif text.startswith("/rundatapipeline"):
-        return await data_pipeline(2)
+        return await data_pipeline(chat_id, 2)
     else:
         send_telegram_message(
             chat_id,
