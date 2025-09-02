@@ -4,7 +4,7 @@ import io
 from app.utils.connectToGoogleDrive import get_single_drive_file_content
 from app.utils.telegram import send_telegram_message
 
-def data_pipeline(bot_version = 1):
+async def data_pipeline(bot_version = 1):
     folder_with_csv = "MyMoney CSV Imports"
 
     # Get the CSV content from the single file in the folder
