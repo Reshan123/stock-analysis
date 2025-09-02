@@ -86,7 +86,7 @@ async def telegram_webhook(request: Request):
             "<b>Unknown command.</b>\n"
             "Available commands:\n\n"
             "/getdetails - Show details for tracked companies\n"
-            "/recommend SYMBOL - Get stock advice\n"
+            "/rundatapipeline - Update 'MyMoney Export' tab with current transactions\n"
             "/updatestockprices - Update stock prices\n"
             "/checkdata - Check current financial position"
         )
