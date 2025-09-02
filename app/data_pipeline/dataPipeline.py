@@ -16,6 +16,10 @@ async def data_pipeline(bot_version = 1):
             csv_file_like_object = io.StringIO(csv_content)
             df = pd.read_csv(csv_file_like_object)
             
+            # transform date
+            df['Date'] = pd.to_datetime(df['Date'])
+            df['Date'] = df['Date'].dt.strftime('%#m/%#d/%Y')
+
             print("Successfully loaded CSV into DataFrame:")
             print(df.head())
 
