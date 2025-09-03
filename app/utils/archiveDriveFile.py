@@ -23,4 +23,4 @@ def archive_drive_file(drive_service, file_id, source_folder_id, dest_folder_nam
 
     except Exception as e:
         print(f"❌ Failed to archive file: {e}")
-        return False
+        raise

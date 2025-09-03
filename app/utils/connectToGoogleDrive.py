@@ -68,8 +68,8 @@ def get_single_drive_file_content(folder_name: str) -> str | None:
     except HttpError as error:
         print(f"An API error occurred: {error}")
         print(traceback.format_exc())
-        return None
+        raise
     except Exception as e:
         print(f"Failed to get file from Google Drive: {e}")
         print(traceback.format_exc())
-        return None
+        raise
