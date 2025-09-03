@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime, timedelta
 import httpx
 
-async def check_data(chat_id: int):
+async def check_data(chat_id: int, bot_version = 1):
     try:
         net_worth_sheet = connect_to_google_sheet("Financial Overview", "Net Worth")
 
@@ -107,14 +107,15 @@ async def check_data(chat_id: int):
 
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
-            text=message
+            text=message,
+            bot_version=bot_version
         )  
     except Exception as e:
         print(f"Error in check_data: {e}")
         send_telegram_message(
             chat_id=chat_id,  # Replace with your actual chat ID
-            text=f"<b>Error checking data: {e}</b>"
-
+            text=f"<b>Error checking data: {e}</b>",
+            bot_version=bot_version
         )
 
 

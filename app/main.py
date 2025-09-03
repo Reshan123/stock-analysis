@@ -26,9 +26,9 @@ def run_daily_tasks_wrapper():
 async def run_daily_tasks():
     """Run the 3 tasks daily at 3PM Sri Lanka time."""
     try:
-        await get_cal_data(CHAT_ID)
-        await update_stock_prices(CHAT_ID)
-        await check_data(CHAT_ID)
+        await get_cal_data(CHAT_ID, 2)
+        await update_stock_prices(CHAT_ID, 2)
+        await check_data(CHAT_ID, 2)
         print("✅ Daily stock and finance update completed.")
     except Exception as e:
         send_telegram_message(CHAT_ID, f"❌ Error running daily job: {str(e)}")
