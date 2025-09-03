@@ -61,7 +61,9 @@ def get_single_drive_file_content(folder_name: str) -> str | None:
         while not done:
             status, done = downloader.next_chunk()
 
-        return file_handle.getvalue().decode('utf-8')
+        file_content = file_handle.getvalue().decode('utf-8')
+
+        return file_content, file_id, folder_id
 
     except HttpError as error:
         print(f"An API error occurred: {error}")
