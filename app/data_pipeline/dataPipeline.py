@@ -37,7 +37,7 @@ async def data_pipeline(chat_id: int, bot_version = 1):
             print("Successfully loaded CSV into DataFrame:")
 
             sheet_name = "Financial Overview"
-            work_sheet_name = "Sheet17"
+            work_sheet_name = "My Money Export"
             sheet = connect_to_google_sheet(sheet_name, work_sheet_name)
             if not sheet:
                 print(f"Failed to connect to Google Sheet. {sheet}")
