@@ -108,6 +108,8 @@ async def telegram_webhook(request: Request):
 
     if text.startswith("/getdetails"):
         return await get_company_info(chat_id, 2)
+    elif text.startswith("/checkdata"):
+        return await check_data(chat_id, 2)
     elif text.startswith("/updatestockprices"):
         await get_cal_data(chat_id, 2)
         return await update_stock_prices(chat_id, 2)
