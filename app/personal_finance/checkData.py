@@ -32,7 +32,6 @@ async def check_data(chat_id: int, bot_version = 1):
                 elif text == "Unit Trust":
                     my_unit_trust_balance = row[3]
 
-
         formatted_net_worth = f"💰 <b>Net Worth:</b> {net_worth}"
         formatted_dad_cse_balance = f"👨‍👦 <b>Dad's CSE Balance:</b> LKR{dad_cse_balance}" if 'dad_cse_balance' in locals() else ""
         formatted_my_unit_trust_balance = f"👤 <b>My Unit Trust Balance:</b> {my_unit_trust_balance}" if 'my_unit_trust_balance' in locals() else ""
@@ -46,7 +45,21 @@ async def check_data(chat_id: int, bot_version = 1):
         if not my_money_export_records:
             print("No data found in the sheet.")
             return
-        last_date = datetime.strptime(my_money_export_records[-1][0], "%m/%d/%Y")
+
+        # ✅ Find the true latest date in column A
+        dates = []
+        for row in my_money_export_records[1:]:  # Skip header row
+            try:
+                if row and row[0]:
+                    parsed_date = datetime.strptime(row[0], "%m/%d/%Y")
+                    dates.append(parsed_date)
+            except ValueError:
+                continue  # Ignore invalid/malformed dates
+        if not dates:
+            print("No valid dates found in My Money Export sheet.")
+            return
+
+        last_date = max(dates)  # Latest date in the sheet
         check_date = datetime.today() - timedelta(days=5)
 
         message = ""
@@ -106,17 +119,14 @@ async def check_data(chat_id: int, bot_version = 1):
             )
 
         send_telegram_message(
-            chat_id=chat_id,  # Replace with your actual chat ID
+            chat_id=chat_id,
             text=message,
             bot_version=bot_version
         )  
     except Exception as e:
         print(f"Error in check_data: {e}")
         send_telegram_message(
-            chat_id=chat_id,  # Replace with your actual chat ID
+            chat_id=chat_id,
             text=f"<b>Error checking data: {e}</b>",
             bot_version=bot_version
         )
-
-
-
