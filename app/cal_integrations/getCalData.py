@@ -38,7 +38,7 @@ async def get_cal_data(chat_id: int, bot_version = 1):
                 if text == "Unit Trust":
                     net_worth_sheet.update_cell(idx, 4, calUnitsTotal)  # Column E = index 5
                     print(f"Updated row {idx} with value '{calUnitsTotal}' for Unit Trust")
-        if bot_version == 2:
+        if bot_version == 1         :
             send_telegram_message(
                 chat_id=chat_id,  # Replace with your actual chat ID
                 text=f"<b>✅ Unit Trust Values Updated Successfully</b>",
