@@ -1,7 +1,9 @@
 import os
 import asyncio
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
+from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from app.company.getCompanyInfo import get_company_info
@@ -11,8 +13,24 @@ from app.sheets_integrations.updateStockPrices import update_stock_prices
 from app.data_pipeline.dataPipeline import data_pipeline
 from app.cal_integrations.getCalData import get_cal_data
 from app.utils.telegram import send_telegram_message
+from app.web_api_endpoints.getBasicInfo import get_basic_info
+from app.web_api_endpoints.getCseInfo import get_cse_info
 
+load_dotenv() 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows specific origins
+    allow_credentials=True, # Allows cookies to be included in requests
+    allow_methods=["*"],    # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],    # Allows all headers
+)
 
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "<your_chat_id>")
 
@@ -128,3 +146,11 @@ async def telegram_webhook(request: Request):
 @app.head("/")
 def root_head():
     return Response(status_code=200)
+
+@app.get("/api/get_cse_info")
+def getCseInfo():
+    return get_cse_info()
+
+@app.get("/api/get_basic_info")
+def getBasicInfo():
+    return get_basic_info()
