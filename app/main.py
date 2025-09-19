@@ -19,9 +19,10 @@ from app.web_api_endpoints.getCseInfo import get_cse_info
 load_dotenv() 
 app = FastAPI()
 
+FRONTEND_ENDPOINT_URL = os.getenv("FRONTEND_ENDPOINT_URL", "<your_chat_id>")
+
 origins = [
-    "http://localhost:5173",
-    "http://localhost:3000",
+    FRONTEND_ENDPOINT_URL
 ]
 
 app.add_middleware(
