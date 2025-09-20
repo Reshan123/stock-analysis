@@ -17,6 +17,7 @@ from app.cal_integrations.getCalData import get_cal_data
 from app.utils.telegram import send_telegram_message
 from app.web_api_endpoints.getBasicInfo import get_basic_info
 from app.web_api_endpoints.getCseInfo import get_cse_info
+from app.web_api_endpoints.getCseLiveData import get_cse_live_data
 
 load_dotenv() 
 app = FastAPI()
@@ -165,3 +166,7 @@ def getCseInfo(api_key: str = Depends(get_api_key)):
 @app.get("/api/get_basic_info")
 def getBasicInfo(api_key: str = Depends(get_api_key)):
     return get_basic_info()
+
+@app.get("/api/get_cse_live_data")
+def getBasicInfo(api_key: str = Depends(get_api_key)):
+    return get_cse_live_data()
