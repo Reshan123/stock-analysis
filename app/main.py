@@ -18,6 +18,7 @@ from app.utils.telegram import send_telegram_message
 from app.web_api_endpoints.getBasicInfo import get_basic_info
 from app.web_api_endpoints.getCseInfo import get_cse_info
 from app.web_api_endpoints.getCseLiveData import get_cse_live_data
+from app.web_api_endpoints.getMonthlyBudgetData import get_monthly_budget_data
 
 load_dotenv() 
 app = FastAPI()
@@ -171,7 +172,16 @@ def getBasicInfo(api_key: str = Depends(get_api_key)):
 def getBasicInfo(api_key: str = Depends(get_api_key)):
     return get_cse_live_data()
 
+@app.get("/api/monthly_budget_data")
+def getMonthlyBudgetData(api_key: str = Depends(get_api_key)):
+    return get_monthly_budget_data()
+
 @app.get("/api/update_stock_prices")
 def updateStockPrices(api_key: str = Depends(get_api_key)):
-    asyncio.run(update_stock_prices(int(CHAT_ID), 2))
+    asyncio.run(update_stock_prices(0, 2))
     return {"status": "Stock prices update initiated."}
+
+@app.get("/api/update_cal_data")
+def updateCalData(api_key: str = Depends(get_api_key)):
+    asyncio.run(get_cal_data(0, 2))
+    return {"status": "CAL data update initiated."}
