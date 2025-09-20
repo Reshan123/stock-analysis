@@ -21,18 +21,12 @@ def get_cse_live_data():
         for company in companies:
             stock_symbol = company["stock_symbol"]
             actual_cost = company["actual_cost"]
-            current_value = company["current_value"]
             number_of_shares = company["number_of_shares"]
 
             if actual_cost in ("LKR0.00", ""):
                 actual_cost_value = 0
             else:
                 actual_cost_value = float(actual_cost.replace("LKR", "").replace(",", ""))
-
-            if current_value in ("LKR0.00", ""):
-                current_cost_value = 0
-            else:
-                current_cost_value = float(current_value.replace("LKR", "").replace(",", ""))
 
             if number_of_shares == "":
                 quantity = 0
@@ -48,17 +42,18 @@ def get_cse_live_data():
 
             companyMainData = company_info["reqSymbolInfo"]
             current_price = float(companyMainData["lastTradedPrice"] or 0)
-            gain_loss = current_cost_value - actual_cost_value
+            current_price_value = current_price * quantity
+            gain_loss = current_price_value - actual_cost_value
 
             company.update({
                 "company_name": companyMainData['name'],
-                "day_range": f"Rs.{companyMainData['lowTrade']} - Rs.{companyMainData['hiTrade']}",
-                "previous_close": f"Rs {companyMainData['previousClose']}",
-                "current_price": f"Rs {companyMainData['lastTradedPrice'] or 0}",
-                "change": f"Rs {companyMainData['change']}",
-                "volume_today": f"{int(companyMainData['tdyShareVolume']):,}",
-                "current_price_value": current_price,
-                "current_value": f"LKR{current_cost_value:,.2f}",
+                "day_range": f"LKR.{companyMainData['lowTrade'] or 0:,.2f} - LKR.{companyMainData['hiTrade'] or 0:,.2f}",
+                "previous_close": f"LKR {companyMainData['previousClose'] or 0:,.2f}",
+                "current_price": f"LKR {companyMainData['lastTradedPrice'] or 0:,.2f}",
+                "change": f"{companyMainData['change']}",
+                "volume_today": f"{int(companyMainData['tdyShareVolume'])}",
+                "current_price_value": f"LKR{current_price_value:,.2f}",
+                "current_value": f"LKR{current_price:,.2f}",
                 "gain_loss": f"LKR{gain_loss:,.2f}",
                 "gain_loss_value": gain_loss,
             })
