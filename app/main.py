@@ -173,5 +173,5 @@ def getBasicInfo(api_key: str = Depends(get_api_key)):
 
 @app.get("/api/update_stock_prices")
 def updateStockPrices(api_key: str = Depends(get_api_key)):
-    asyncio.run(update_stock_prices(int(CHAT_ID), 1))
+    asyncio.run(update_stock_prices(int(CHAT_ID), 2))
     return {"status": "Stock prices update initiated."}
