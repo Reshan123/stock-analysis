@@ -38,7 +38,7 @@ app.add_middleware(
     allow_headers=["*"],    # Allows all headers
 )
 
-API_KEY_NAME = "X-API-Key"  # header name
+API_KEY_NAME = "X_API_KEY"  # header name
 api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
 
 async def get_api_key(api_key_header: str = Security(api_key_header)):
@@ -170,3 +170,8 @@ def getBasicInfo(api_key: str = Depends(get_api_key)):
 @app.get("/api/get_cse_live_data")
 def getBasicInfo(api_key: str = Depends(get_api_key)):
     return get_cse_live_data()
+
+@app.get("/api/update_stock_prices")
+def updateStockPrices(api_key: str = Depends(get_api_key)):
+    asyncio.run(update_stock_prices(int(CHAT_ID), 1))
+    return {"status": "Stock prices update initiated."}
