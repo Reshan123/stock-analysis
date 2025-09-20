@@ -13,12 +13,23 @@ def get_cse_info():
         print("No data found in the sheet.")
         return {"error": "No data found in the sheet."}
     
-    companies = []
-    for idx, row in enumerate(cse_records[1:], start=2):
+    companies = {
+        "personal": [],
+        "dads": []
+    }
+
+    # Track if we’re before or after the "Total" row
+    before_total = True
+
+    for idx, row in enumerate(cse_records[1:], start=2):  # skip header row
+        if "Total" in row[1]:  # assume first column marks the total row
+            before_total = False
+            continue
+
         stock_symbol = ""
-        if pattern.match(row[2].strip()):
+        if len(row) > 2 and pattern.match(row[2].strip()):
             stock_symbol = row[2].strip()
-        elif row[2].strip() == "Actual Cost":
+        elif len(row) > 2 and row[2].strip() == "Actual Cost":
             continue
         else:
             continue
@@ -26,7 +37,7 @@ def get_cse_info():
         if stock_symbol == "":
             continue
         
-        companies.append({
+        stock_data = {
             "row": idx,
             "stock_symbol": stock_symbol,
             "actual_cost": row[3].strip(),
@@ -34,5 +45,11 @@ def get_cse_info():
             "per_share_value": row[5].strip(),
             "current_value": row[6].strip(),
             "gain_loss": row[7].strip(),
-        })
+        }
+
+        if before_total:
+            companies["personal"].append(stock_data)
+        else:
+            companies["dads"].append(stock_data)
+
     return {"companies": companies}
