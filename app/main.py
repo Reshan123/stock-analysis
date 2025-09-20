@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security.api_key import APIKeyHeader
+from fastapi import FastAPI, Depends, HTTPException, Security
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from app.company.getCompanyInfo import get_company_info
@@ -20,6 +22,8 @@ load_dotenv()
 app = FastAPI()
 
 FRONTEND_ENDPOINT_URL = os.getenv("FRONTEND_ENDPOINT_URL", "<your_chat_id>")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "<your_chat_id>")
+API_KEY = os.getenv("API_KEY")
 
 origins = [
     FRONTEND_ENDPOINT_URL
@@ -33,7 +37,13 @@ app.add_middleware(
     allow_headers=["*"],    # Allows all headers
 )
 
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "<your_chat_id>")
+API_KEY_NAME = "X-API-Key"  # header name
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def get_api_key(api_key_header: str = Security(api_key_header)):
+    if api_key_header == API_KEY:
+        return api_key_header
+    raise HTTPException(status_code=403, detail="Forbidden")
 
 scheduler = BackgroundScheduler()
 main_loop = None  # store reference to FastAPI's asyncio loop
@@ -149,9 +159,9 @@ def root_head():
     return Response(status_code=200)
 
 @app.get("/api/get_cse_info")
-def getCseInfo():
+def getCseInfo(api_key: str = Depends(get_api_key)):
     return get_cse_info()
 
 @app.get("/api/get_basic_info")
-def getBasicInfo():
+def getBasicInfo(api_key: str = Depends(get_api_key)):
     return get_basic_info()
