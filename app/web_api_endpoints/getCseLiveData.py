@@ -42,7 +42,7 @@ def get_cse_live_data():
 
             companyMainData = company_info["reqSymbolInfo"]
             current_price = float(companyMainData["lastTradedPrice"] or 0)
-            current_price_value = current_price * quantity
+            current_price_value = (current_price * quantity) * 98.88 / 100
             gain_loss = current_price_value - actual_cost_value
 
             company.update({
